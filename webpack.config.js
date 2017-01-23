@@ -1,12 +1,12 @@
 var webpack = require('webpack');
 
 module.exports = {
-	entry: './src/slot-block.js',
+	entry: './src/slotter.js',
 	devtool: 'source-map',
 	output: {
 		path: './lib',
-		filename: 'slot-block.min.js',
-		library: 'SlotBlock',
+		filename: 'slotter.min.js',
+		library: 'Slotter',
 		libraryTarget: 'umd',
 		umdNamedDefine: true
 	},

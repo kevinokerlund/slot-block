@@ -2,7 +2,7 @@ import './polyfills/Element-Matches';
 
 let Instances = new WeakMap();
 
-class SlotBlock {
+class Slotter {
 	constructor(slot) {
 		this.slot = slot;
 		this.allow = ''; // Might look at making this work inside a function too
@@ -42,7 +42,7 @@ export default {
 		let instance = Instances.get(slot);
 
 		if (!instance) {
-			instance = new SlotBlock(slot);
+			instance = new Slotter(slot);
 			Instances.set(slot, instance);
 		}
 
@@ -61,7 +61,7 @@ export default {
 			}
 
 			if (allowValue && !instance) {
-				instance = new SlotBlock(slot);
+				instance = new Slotter(slot);
 				Instances.set(slot, instance);
 				instance.allow = allowValue;
 			}

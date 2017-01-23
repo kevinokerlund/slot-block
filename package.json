@@ -1,21 +1,21 @@
 {
-  "name": "slot-block",
+  "name": "slotter",
   "version": "0.0.1-dev",
   "description": "",
-  "main": "lib/slot-block.min.js",
+  "main": "lib/slotter.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kevinokerlund/slot-block.git"
+    "url": "git+https://github.com/kevinokerlund/slotter.git"
   },
   "author": "Kevin Okerlund",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kevinokerlund/slot-block/issues"
+    "url": "https://github.com/kevinokerlund/slotter/issues"
   },
-  "homepage": "https://github.com/kevinokerlund/slot-block#readme",
+  "homepage": "https://github.com/kevinokerlund/slotter#readme",
   "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
