@@ -1,78 +1,60 @@
 import './polyfills/Element-Matches';
 
-let Instances = new WeakMap();
+function slotHasName(slot) {
+	return slot.hasAttribute('name') && slot.getAttribute('name').length;
+}
+
+function slotHasSelectRule(slot) {
+	return slot.hasAttribute('select') && slot.getAttribute('select').length;
+}
 
 class Slotter {
-	constructor(slot) {
-		this.slot = slot;
-		this.allow = ''; // Might look at making this work inside a function too
-		this.callback = Function.prototype; // noop
+	constructor(shadowRoot) {
+		this.shadowRoot = shadowRoot;
+
+		this.slots = [];
+		this.defaultSlot = null;
+		this.selectNameMap = {};
+
+		this.setVariables();
+
+		this.autoAssign();
 	}
 
+	setVariables() {
+		this.slots = Array.from(this.shadowRoot.querySelectorAll('slot'));
 
-	clean() {
-		let nodes = this.slot.assignedNodes();
-		nodes.forEach(node => {
-			let matches = (this.allow.length) ? node.matches(this.allow) : false;
-			let test = this.callback(node);
+		this.defaultSlot = this.slots.find(slot => !slotHasName(slot));
 
-			if (!matches && !test) {
-				node.removeAttribute('slot');
-			}
-		});
+		this.selectNameMap = this.slots
+			.filter(slotHasName && slotHasSelectRule)
+			.reduce((a, b) => {
+				let select = b.getAttribute('select');
+
+				if (!a[select]) {
+					a[select] = b.getAttribute('name');
+				}
+
+				return a;
+			}, {});
 	}
 
-
-	setEvents() {
-		this.slot.addEventListener('slotchange', (e) => {
-			this.clean();
-		});
+	autoAssign() {
+		[...this.defaultSlot.assignedNodes()]
+			.filter(node => node.nodeType === 1 && !node.hasAttribute('no-slot'))
+			.forEach(node => {
+				Object.keys(this.selectNameMap).some(selector => {
+					if (node.matches(selector)) {
+						node.setAttribute('slot', this.selectNameMap[selector]);
+						return true;
+					}
+				});
+			});
 	}
 }
 
-// @Todo Feels like a LOT of logic for allowing two ways of specifying "allow" rules (allow, watch)
 export default {
-	allow(slot, check) {
-		let slotName = slot.getAttribute('name');
-
-		if (!slotName) {
-			return;
-		}
-
-		let instance = Instances.get(slot);
-
-		if (!instance) {
-			instance = new Slotter(slot);
-			Instances.set(slot, instance);
-		}
-
-		instance.callback = check;
-	},
-
-	watch(shadowRoot) {
-		let slots = Array.from(shadowRoot.querySelectorAll('slot[name]'));
-		slots.forEach(slot => {
-			let instance = Instances.get(slot);
-			let allowValue = slot.getAttribute('allow');
-			let slotName = slot.getAttribute('name');
-
-			if (!slotName) {
-				return;
-			}
-
-			if (allowValue && !instance) {
-				instance = new Slotter(slot);
-				Instances.set(slot, instance);
-				instance.allow = allowValue;
-			}
-			else if (allowValue && instance) {
-				instance.allow = allowValue;
-			}
-
-			if (instance) {
-				instance.clean();
-				instance.setEvents();
-			}
-		});
+	watch: function (shadowRoot) {
+		new Slotter(shadowRoot);
 	}
 }
