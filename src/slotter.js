@@ -27,7 +27,7 @@ class Slotter {
 		this.defaultSlot = this.slots.find(slot => !slotHasName(slot));
 
 		this.selectNameMap = this.slots
-			.filter(slotHasName && slotHasSelectRule)
+			.filter(slot => slotHasName(slot) && slotHasSelectRule(slot))
 			.reduce((a, b) => {
 				let select = b.getAttribute('select');
 
@@ -40,7 +40,7 @@ class Slotter {
 	}
 
 	autoAssign() {
-		[...this.defaultSlot.assignedNodes()]
+		this.defaultSlot.assignedNodes()
 			.filter(node => node.nodeType === 1 && !node.hasAttribute('no-slot'))
 			.forEach(node => {
 				Object.keys(this.selectNameMap).some(selector => {
